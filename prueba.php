@@ -9,10 +9,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 include_once "cifrarDescifrar.php";
 
-function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
+function configurarCorreo()
 {
     $mail = new PHPMailer(true);
-
     $mail->SMTPDebug = 0;
     $mail->isSMTP();
     $mail->Host = "smtp.gmail.com";
@@ -23,20 +22,43 @@ function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
     $mail->Port = 465;
     $mail->CharSet = "UTF-8";
 
-    $to = "danielalonsodaw@gmail.com";
+    return $mail;
+}
 
-    if (!empty($to)) {
-        $mail->addAddress($to);
+function establecerDestinatario($mail, $correo)
+{
+    if (!empty($correo)) {
+        $mail->addAddress($correo);
     } else {
         echo "La dirección de correo del destinatario no está definida. ";
     }
+}
 
-    // Contenido
-    $mail->addcc("sergiomc11756@gmail.com", "sergio");
-    $mail->addbcc("sergiomorillas02@gmail.com", "sergio");
-    $mail->addAttachment("imagen.png");
-    $mail->Subject = "MI ASUNTO PERSONALIZADO";
-    $mail->Body = "EL CONTENIDO DE MI CORREO UTILIZANDO PHPMAILERsergio en bccsergio en bccsergio en bccsergio en bcc";
+function añadirCopia($mail, $cc)
+{
+    foreach ($cc as $email) {
+        $mail->addCC($email);
+    }
+}
+
+function añadirCopiaOculta($mail, $bcc)
+{
+    foreach ($bcc as $email) {
+        $mail->addBCC($email);
+    }
+}
+
+function añadirAdjunto($mail, $adjunto)
+{
+    if (!empty($adjunto)) {
+        $mail->addAttachment($adjunto);
+    }
+}
+
+function enviarCorreo($mail, $asunto, $cuerpo)
+{
+    $mail->Subject = $asunto;
+    $mail->Body = $cuerpo;
 
     try {
         $mail->send();
@@ -44,6 +66,16 @@ function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
     } catch (Exception $e) {
         echo "El mensaje no se pudo enviar. Mailer Error: {$mail->ErrorInfo}";
     }
+}
+
+function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
+{
+    $mail = configurarCorreo();
+    establecerDestinatario($mail, $correo);
+    añadirCopia($mail, $cc);
+    añadirCopiaOculta($mail, $bcc);
+    añadirAdjunto($mail, $adjunto);
+    enviarCorreo($mail, $asunto, $cuerpo);
 }
 
 function getPass()

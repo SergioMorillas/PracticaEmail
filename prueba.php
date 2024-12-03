@@ -87,7 +87,7 @@ do {
     switch ($respuestaUsuario) {
         case '1':
             $respuesta1 = readline("\nIndica el correo al que deseas enviar: ");
-
+            // Comprobamos que es un correo válido
             if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $respuesta1)) {
                 $correo = $respuesta1;
                 echo "Correo: $correo guardado\n";
@@ -98,7 +98,7 @@ do {
         case '2':
             $respuesta2 = readline("\nIndica los correos que quieres añadir en copia separados por ',' : ");
             $arrayRepuesta2 = explode(",", $respuesta2);
-
+            // Revisamos que los datos del array sean correos válidos
             foreach ($arrayRepuesta2 as $copia) {
                 if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $copia)) {
                     array_push($cc, $copia);
@@ -113,6 +113,7 @@ do {
             $arrayRepuesta3 = explode(",", $respuesta3);
 
             foreach ($arrayRepuesta3 as $oculta) {
+                // Revisamos que los datos del array sean correos válidos
                 if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $oculta)) {
                     array_push($bcc, $oculta);
                     echo "Correo en copia oculta: $oculta añadido\n";
@@ -128,7 +129,8 @@ do {
             $cuerpo = readline("\nAñade el cuerpo del correo: ");
             break;
         case '6':
-            $respuesta6 = readline("\nIndica el nombre del archivo que quieres enviar, incluyendo la extensión del archivo (Debe estar en la carpeta del proyecto): ");
+            $respuesta6 = readline("\nIndica el nombre del archivo que quieres enviar, incluyendo la extensión del archivo (Debe estar en la carpeta del proyecto o indicar ruta): ");
+            // Comprobamos que el archivo indicado existe 
             if (file_exists($respuesta6)) {
                 $adjunto = $respuesta6;
                 echo "Archivo adjunto: $respuesta6 añadido\n";

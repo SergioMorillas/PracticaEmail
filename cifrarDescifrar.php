@@ -37,8 +37,8 @@ function descifrar($data, $key)
 
 // Pruebas
 
-$textoPlano = "";
-$clave = "";
+$textoPlano = "hpnw phfe sxiv cagc";
+$clave = "pruebas";
 $textoCifrado = cifrar($textoPlano, $clave);
 echo "Texto Cifrado: " . $textoCifrado . "\n";
 

@@ -105,7 +105,6 @@ function getEnvVar()
 
 function mostrarMenu($correo, $asunto, $cuerpo)
 {
-    $str = "1) Añadir correo en Para\n";
     if (!empty($correo)) {
         $str ="1) Añadir correo en Para\n";
     }else{

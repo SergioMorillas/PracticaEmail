@@ -9,7 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 include_once "cifrarDescifrar.php";
 include_once "art.php";
 
-$env =  getEnvVar();
+$env = getEnvVar();
 $correo = "";
 $cc = [];
 $bcc = [];
@@ -36,6 +36,7 @@ function configurarCorreo()
 
     return $mail;
 }
+
 /**
  * Función que establece el destinatario introducido por el usuario en el mail
  * @param PHPMailer $mail El correo previamente configurado en la función @configurarCorreo
@@ -50,6 +51,7 @@ function establecerDestinatario($mail, $correo)
         echo "La dirección de correo del destinatario no está definida. ";
     }
 }
+
 /**
  * Función que establece el cc introducido por el usuario en el mail
  * @param PHPMailer $mail El correo previamente configurado en la función 
@@ -61,6 +63,7 @@ function añadirCopia($mail, $cc)
         $mail->addCC($email);
     }
 }
+
 /**
  * Función que establece el CCO introducido por el usuario en el mail
  * @param PHPMailer $mail El correo previamente configurado en la función 
@@ -72,6 +75,7 @@ function añadirCopiaOculta($mail, $bcc)
         $mail->addBCC($email);
     }
 }
+
 /**
  * Función que establece el adjunto introducido por el usuario en el mail
  * @param PHPMailer $mail El correo previamente configurado en la función 
@@ -98,11 +102,12 @@ function enviarCorreo($mail, $asunto, $cuerpo)
 
     try {
         $mail->send();
-        echo "El mensaje ha sido enviado";
+        echo "El mensaje ha sido enviado\n";
     } catch (Exception $e) {
-        echo "El mensaje no se pudo enviar. Mailer Error: {$mail->ErrorInfo}";
+        echo "El mensaje no se pudo enviar. Mailer Error: {$mail->ErrorInfo}\n";
     }
 }
+
 /**
  * Función para mandar el correo, que ejecuta las funciones anteriores para configurar el correo y establecer los distintos parametros que necesita
  * @param mixed $correo El correo
@@ -115,22 +120,23 @@ function enviarCorreo($mail, $asunto, $cuerpo)
  */
 function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
 {
-        $mail = configurarCorreo();
-        establecerDestinatario($mail, $correo);
-        añadirCopia($mail, $cc);
-        añadirCopiaOculta($mail, $bcc);
-        añadirAdjunto($mail, $adjunto);
-        enviarCorreo($mail, $asunto, $cuerpo);
-    
-
+    $mail = configurarCorreo();
+    establecerDestinatario($mail, $correo);
+    añadirCopia($mail, $cc);
+    añadirCopiaOculta($mail, $bcc);
+    añadirAdjunto($mail, $adjunto);
+    enviarCorreo($mail, $asunto, $cuerpo);
 }
-/** 
+
+/**
  * 
-*/
-function getMail(){
+ */
+function getMail()
+{
     global $env;
     return $env["MAIL"];
 }
+
 /** */
 function getPass()
 {
@@ -140,6 +146,7 @@ function getPass()
 
     return descifrar($cifrado, $clave);
 }
+
 function getEnvVar()
 {
     global $env;
@@ -154,13 +161,11 @@ function getEnvVar()
 
 function mostrarMenu($correo, $asunto, $cuerpo)
 {
-
-    
     echo getTitle();
     echo getCapibara();
     if (!empty($correo)) {
         $str ="1) Modificar correo en Para\n";
-    }else{
+    } else {
         $str ="1) Añadir correo en Para\n";
     }
     $str .= "2) Añadir correos en Copia\n";
@@ -170,11 +175,11 @@ function mostrarMenu($correo, $asunto, $cuerpo)
     $str .= "6) Añadir archivo adjunto\n";
     if (!empty($correo) && !empty($asunto) && !empty($cuerpo)) {
         $str .= "7) Enviar correo\n";
-    } 
-    $str .= "8) Salir\n";
+    }
+    $str .= "8) Enviar correo desde CSV\n";
+    $str .= "9) Salir\n";
     return $str;
 }
-
 
 do {
     echo mostrarMenu($correo, $asunto, $cuerpo);
@@ -193,12 +198,10 @@ do {
             // Revisamos que los datos del array sean correos válidos
             $copia = comprobarArrayCorreo($arrayRepuesta2);
             $copia?array_push($cc, $copia):"No es una lista de correo válida.\n";
-            
             break;
         case '3':
             $respuesta3 = readline("Indica los correos que quieres añadir en copia oculta separados por ',' : ");
             $arrayRepuesta3 = explode(",", $respuesta3);
-
             // Revisamos que los datos del array sean correos válidos
             $copia = comprobarArrayCorreo($arrayRepuesta3);
             $copia?array_push($bcc, $copia):"No es una lista de correo válida.\n";
@@ -222,23 +225,40 @@ do {
         case '7':
             return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto); 
         case '8':
+            $csvFile = readline("Indica el nombre del archivo CSV: ");
+            procesarCSV($csvFile);
+            break;
+        case '9':
             return;
         default:
             echo "Introduce un número correcto";
     }
-} while ($respuestaUsuario != 8);
+} while ($respuestaUsuario != 9);
 
-
-function comprobarCorreo($string){
+/**
+ * Función que comprueba si un correo es válido
+ * @param String $string El correo que quieres comprobar
+ * @return mixed El correo si es válido, false si no
+ */
+function comprobarCorreo($string)
+{
     if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $string)) {
         echo "Correo: $string guardado\n";
         return $string;
     } else {
         echo "No es un correo válido.\n";
+        return false;
     }
 }
 
-function comprobarArrayCorreo($array){
+/**
+ * Función que comprueba si los correos en un array son válidos
+ * @param array $array Array de correos que quieres comprobar
+ * @return array Array de correos válidos, false si algún correo no es válido
+ */
+function comprobarArrayCorreo($array)
+{
+    //Bucle que itera por todos los correos de cc o bcc para comprobar su validez con regex
     foreach ($array as $copia) {
         if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $copia)) {
             echo "Correo en copia: $copia añadido\n";
@@ -249,4 +269,36 @@ function comprobarArrayCorreo($array){
     return true;
 }
 
+/**
+ * Función que procesa un archivo CSV para enviar correos
+ * @param string $csvFile Ruta del archivo CSV
+ * @return void
+ */
+function procesarCSV($csvFile)
+{
+    global $correo, $cc, $bcc, $asunto, $cuerpo, $adjunto;
+    
+    if (!file_exists($csvFile)) {
+        echo "No se encontró el archivo: $csvFile\n";
+        return;
+    }
 
+    $file = fopen($csvFile, 'r');
+    if ($file !== false) {
+        while (($line = fgetcsv($file, 0, ';')) !== false) {
+
+            print_r($line);
+            $correo = $line[0];
+            $cc = !empty($line[1]) ? explode(',', $line[1]) : [];
+            $bcc = !empty($line[2]) ? explode(',', $line[2]) : [];
+            $asunto = $line[3];
+            $cuerpo = $line[4];
+            $adjunto = !empty($line[5]) ? $line[5] : '';
+            
+            mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
+        }
+        fclose($file);
+    } else {
+        echo "No se pudo abrir el archivo: $csvFile\n";
+    }
+}

@@ -115,12 +115,14 @@ function enviarCorreo($mail, $asunto, $cuerpo)
  */
 function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
 {
-    $mail = configurarCorreo();
-    establecerDestinatario($mail, $correo);
-    añadirCopia($mail, $cc);
-    añadirCopiaOculta($mail, $bcc);
-    añadirAdjunto($mail, $adjunto);
-    enviarCorreo($mail, $asunto, $cuerpo);
+        $mail = configurarCorreo();
+        establecerDestinatario($mail, $correo);
+        añadirCopia($mail, $cc);
+        añadirCopiaOculta($mail, $bcc);
+        añadirAdjunto($mail, $adjunto);
+        enviarCorreo($mail, $asunto, $cuerpo);
+    
+
 }
 /** 
  * 
@@ -183,7 +185,7 @@ do {
         case '1':
             $respuesta1 = readline("Indica el correo al que deseas enviar: ");
             // Comprobamos que es un correo válido
-            $correo = comprobarCorreo($string);
+            $correo = comprobarCorreo($respuesta1);
             break;
         case '2':
             $respuesta2 = readline("Indica los correos que quieres añadir en copia separados por ',' : ");
@@ -246,3 +248,5 @@ function comprobarArrayCorreo($array){
     }
     return true;
 }
+
+

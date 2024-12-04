@@ -185,10 +185,8 @@ do {
             break;
         case '7':
             return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
-            break;
         case '8':
             return;
-            break;
         default:
             echo "Introduce un número correcto";
     }

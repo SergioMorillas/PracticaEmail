@@ -105,7 +105,11 @@ function getEnvVar()
 
 function mostrarMenu($correo, $asunto, $cuerpo)
 {
-    $str = "1) Añadir correo en Para\n";
+    if (!empty($correo)) {
+        $str ="1) Añadir correo en Para\n";
+    }else{
+        $str ="1) Modificar correo en Para\n";  
+    }
     $str .= "2) Añadir correos en Copia\n";
     $str .= "3) Añadir correos en Copia Oculta\n";
     $str .= "4) Añadir asunto de correo\n";
@@ -185,10 +189,8 @@ do {
             break;
         case '7':
             return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
-            break;
         case '8':
             return;
-            break;
         default:
             echo "Introduce un número correcto";
     }

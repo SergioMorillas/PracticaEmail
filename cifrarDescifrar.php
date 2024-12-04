@@ -34,14 +34,3 @@ function descifrar($data, $key)
     $encrypted = substr($data, $iv_length);
     return openssl_decrypt($encrypted, $method, $key, 0, $iv);
 }
-
-// Pruebas
-
-$textoPlano = "hpnw phfe sxiv cagc";
-$clave = "pruebas";
-$textoCifrado = cifrar($textoPlano, $clave);
-echo "Texto Cifrado: " . $textoCifrado . "\n";
-
-
-$textoDescifrado = descifrar($textoCifrado, $clave);
-echo "Texto Descifrado: " . $textoDescifrado;

@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
 
 include_once "cifrarDescifrar.php";
-
+$env =  getEnvVar();
 function configurarCorreo()
 {
     $mail = new PHPMailer(true);
@@ -16,7 +16,7 @@ function configurarCorreo()
     $mail->isSMTP();
     $mail->Host = "smtp.gmail.com";
     $mail->SMTPAuth = true;
-    $mail->Username = "sergiomc11756@gmail.com";
+    $mail->Username = getMail();
     $mail->Password = getPass();
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
@@ -78,17 +78,30 @@ function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
     enviarCorreo($mail, $asunto, $cuerpo);
 }
 
+function getMail(){
+    global $env;
+    return $env["MAIL"];
+}
 function getPass()
 {
-    $file = fopen(".env", "r");
-    $cifrada = trim(explode("@", fgets($file))[1]);
-    $clave = trim(explode("@", fgets($file))[1]);
-    fclose($file);
+    global $env;
+    $cifrado = $env["CIFRADO"];
+    $clave = $env["CLAVE"];
 
-    echo "\nClave: " . $clave;
-    return descifrar($cifrada, $clave);
+    return descifrar($cifrado, $clave);
 }
-echo "\nContraseña: " . getPass() . "\n";
+function getEnvVar()
+{
+    global $env;
+    $file = fopen(".env", "r");
+    while (!feof($file)) {
+        $line = fgets($file);
+        $env[trim(explode("#", $line)[0])] = trim(explode("#", $line)[1]);
+    }
+    print_r($env);
+    fclose($file);
+    return $env;
+}
 
 function mostrarMenu($correo, $asunto, $cuerpo)
 {
@@ -169,6 +182,7 @@ do {
             } else {
                 echo "No se ha encontrado el archivo: $respuesta6\n";
             }
+            break;
         case '7':
             return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
             break;

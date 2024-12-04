@@ -164,9 +164,9 @@ function mostrarMenu($correo, $asunto, $cuerpo)
     echo getTitle();
     echo getCapibara();
     if (!empty($correo)) {
-        $str ="1) Modificar correo en Para\n";
+        $str = "1) Modificar correo en Para\n";
     } else {
-        $str ="1) Añadir correo en Para\n";
+        $str = "1) Añadir correo en Para\n";
     }
     $str .= "2) Añadir correos en Copia\n";
     $str .= "3) Añadir correos en Copia Oculta\n";
@@ -190,21 +190,34 @@ do {
         case '1':
             $respuesta1 = readline("Indica el correo al que deseas enviar: ");
             // Comprobamos que es un correo válido
-            $correo = comprobarCorreo($respuesta1);
-            break;
+            if (comprobarCorreo($respuesta1)) {
+                $correo = $respuesta1;
+                echo "Se ha añadido el correo: $respuesta1\n";
+            } else {
+                echo "El correo indicado no es válido\n";
+            }
+            break;;
         case '2':
             $respuesta2 = readline("Indica los correos que quieres añadir en copia separados por ',' : ");
             $arrayRepuesta2 = explode(",", $respuesta2);
-            // Revisamos que los datos del array sean correos válidos
-            $copia = comprobarArrayCorreo($arrayRepuesta2);
-            $copia?array_push($cc, $copia):"No es una lista de correo válida.\n";
+            // Revisamos que los datos del array sean correos válidos 
+            if (comprobarArrayCorreo($arrayRepuesta2)) {
+                $cc = array_merge($cc, $arrayRepuesta2);
+                echo "Lista de correos añadida a CC\n";
+            } else {
+                echo "No es una lista de correo válida.\n";
+            }
             break;
         case '3':
             $respuesta3 = readline("Indica los correos que quieres añadir en copia oculta separados por ',' : ");
             $arrayRepuesta3 = explode(",", $respuesta3);
             // Revisamos que los datos del array sean correos válidos
-            $copia = comprobarArrayCorreo($arrayRepuesta3);
-            $copia?array_push($bcc, $copia):"No es una lista de correo válida.\n";
+            if (comprobarArrayCorreo($arrayRepuesta3)) {
+                $bcc = array_merge($bcc, $arrayRepuesta3);
+                echo "Lista de correos añadida a CCO\n";
+            } else {
+                echo "No es una lista de correo válida.\n";
+            }
             break;
         case '4':
             $asunto = readline("Añade el asunto del correo: ");
@@ -223,7 +236,7 @@ do {
             }
             break;
         case '7':
-            return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto); 
+            return mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
         case '8':
             $csvFile = readline("Indica el nombre del archivo CSV: ");
             procesarCSV($csvFile);
@@ -243,10 +256,8 @@ do {
 function comprobarCorreo($string)
 {
     if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $string)) {
-        echo "Correo: $string guardado\n";
-        return $string;
+        return true;
     } else {
-        echo "No es un correo válido.\n";
         return false;
     }
 }
@@ -260,9 +271,7 @@ function comprobarArrayCorreo($array)
 {
     //Bucle que itera por todos los correos de cc o bcc para comprobar su validez con regex
     foreach ($array as $copia) {
-        if (preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/", $copia)) {
-            echo "Correo en copia: $copia añadido\n";
-        } else {
+        if (!comprobarCorreo($copia)) {
             return false;
         }
     }
@@ -277,7 +286,7 @@ function comprobarArrayCorreo($array)
 function procesarCSV($csvFile)
 {
     global $correo, $cc, $bcc, $asunto, $cuerpo, $adjunto;
-    
+
     if (!file_exists($csvFile)) {
         echo "No se encontró el archivo: $csvFile\n";
         return;
@@ -294,7 +303,7 @@ function procesarCSV($csvFile)
             $asunto = $line[3];
             $cuerpo = $line[4];
             $adjunto = !empty($line[5]) ? $line[5] : '';
-            
+
             mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto);
         }
         fclose($file);

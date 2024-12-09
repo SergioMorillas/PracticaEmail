@@ -129,7 +129,8 @@ function mandarCorreo($correo, $cc, $bcc, $asunto, $cuerpo, $adjunto)
 }
 
 /**
- * 
+ * Función que obtiene el correo electrónico del archivo .env
+ * @return string El correo electrónico
  */
 function getMail()
 {
@@ -137,7 +138,10 @@ function getMail()
     return $env["MAIL"];
 }
 
-/** */
+/**
+ * Función que obtiene la contraseña descifrada del archivo .env
+ * @return string La contraseña descifrada
+ */
 function getPass()
 {
     global $env;
@@ -147,6 +151,10 @@ function getPass()
     return descifrar($cifrado, $clave);
 }
 
+/**
+ * Función que obtiene las variables de entorno del archivo .env
+ * @return array Las variables de entorno
+ */
 function getEnvVar()
 {
     global $env;
@@ -159,6 +167,13 @@ function getEnvVar()
     return $env;
 }
 
+/**
+ * Función que muestra el menú de opciones para el usuario
+ * @param string $correo El correo del destinatario
+ * @param string $asunto El asunto del correo
+ * @param string $cuerpo El cuerpo del correo
+ * @return string El menú de opciones
+ */
 function mostrarMenu($correo, $asunto, $cuerpo)
 {
     echo getTitle();

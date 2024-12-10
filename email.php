@@ -311,7 +311,9 @@ function procesarCSV($csvFile)
     if ($file !== false) {
         while (($line = fgetcsv($file, 0, ';')) !== false) {
 
-            print_r($line);
+            foreach ($line as $valor) {
+                echo $valor . "\n";
+            }
             $correo = $line[0];
             $cc = !empty($line[1]) ? explode(',', $line[1]) : [];
             $bcc = !empty($line[2]) ? explode(',', $line[2]) : [];
